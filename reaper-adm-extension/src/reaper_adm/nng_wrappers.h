@@ -15,6 +15,7 @@
 #include <assert.h>
 #include <functional>
 #include <memory>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <cstdlib>
