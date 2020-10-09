@@ -27,6 +27,7 @@ jobs:
           - name: "Ubuntu 20.04 GCC Extension only"
             os: ubuntu-20.04
             package: true
+            vcpkg_toolchain: x64-linux
             cmake_config: >-
               -DEPS_BUILD_PACKAGE=ON
               -DEPS_BUILD_PLUGINS=OFF
@@ -56,8 +57,7 @@ jobs:
       # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v4
-        if: matrix.config.os != 'ubuntu-20.04'
-        env: 
+        env:
           vcpkgResponseFile: '${{github.workspace}}/response_file.txt'
         with:
           # Response file stored in source control, it provides the list of ports and triplet(s).
@@ -68,9 +68,9 @@ jobs:
           # compute its hash and append this to the computed cache's key.
           appendedCacheKey: ${{ hashFiles(env.vcpkgResponseFile) }}
       
-      - name: 'Install ubuntu dependencies'
-        if: matrix.config.os == 'ubuntu-20.04'
-        run: sudo apt-get update && sudo apt-get install ccache libboost-dev libboost-filesystem-dev libboost-math-dev libboost-mpi-dev protobuf-compiler libprotobuf-dev libnng-dev libspdlog-dev libyaml-cpp-dev libasound2-dev 
+#      - name: 'Install ubuntu dependencies'
+#        if: matrix.config.os == 'ubuntu-20.04'
+#        run: sudo apt-get update && sudo apt-get install ccache libboost-dev libboost-filesystem-dev libboost-math-dev libboost-mpi-dev protobuf-compiler libprotobuf-dev libnng-dev libspdlog-dev libyaml-cpp-dev libasound2-dev
       
       - name: 'Install ccache on windows'
         if: matrix.config.os == 'windows-latest'
@@ -84,7 +84,11 @@ jobs:
       - name: 'Install ccache on macos'
         if: matrix.config.os == 'macos-latest'
         run: brew install ccache
-      
+
+      - name: 'Install ccache on ubuntu'
+        if: matrix.config.os == 'ubuntu-20.04'
+        run: sudo apt-get install ccache
+
       - name: 'Add ccache to path'
         run: echo "::add-path::${{ runner.workspace }}"
         
