@@ -23,11 +23,17 @@ jobs:
               -DCMAKE_C_COMPILER_LAUNCHER=ccache
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
               -DCMAKE_BUILD_TYPE=Release
-              -GNinja        
-          #- {
-          #    name: "Ubuntu 20.04 GCC",
-          #    os: ubuntu-20.04
-          #  }
+              -GNinja
+          - name: "Ubuntu 20.04 GCC Extension only"
+            os: ubuntu-20.04
+            package: true
+            cmake_config: >-
+              -DEPS_BUILD_PACKAGE=ON
+              -DEPS_BUILD_PLUGINS=OFF
+              -DCMAKE_C_COMPILER_LAUNCHER=ccache
+              -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+              -DCMAKE_BUILD_TYPE=Release
+              -GNinja
           - name: "macOS Latest Clang"
             os: macos-latest
             package: true
@@ -50,6 +56,7 @@ jobs:
       # Restore from cache the previously built ports. If "cache miss", then provision vcpkg, install desired ports, finally cache everything for the next run.
       - name: Restore from cache and run vcpkg
         uses: lukka/run-vcpkg@v4
+        if: matrix.config.os != 'ubuntu*'
         env: 
           vcpkgResponseFile: '${{github.workspace}}/response_file.txt'
         with:
