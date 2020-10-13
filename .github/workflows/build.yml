@@ -34,6 +34,7 @@ jobs:
               -DCMAKE_C_COMPILER_LAUNCHER=ccache
               -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
               -DCMAKE_BUILD_TYPE=Release
+              -DCMAKE_VERBOSE_MAKEFILE=ON
               -GNinja
           - name: "macOS Latest Clang"
             os: macos-latest
