@@ -6,40 +6,37 @@
 
 namespace admplug {
     class ReaperAPI;
-
     /**
-    * @brief The ParameterValueMapping interface
-    * ParameterValueMappings are responsible for converting from values extracted from adm parameters
-    * to the range of values supported by an automation envelope, and vice versa
-    */
+     * @brief The ParameterValueMapping interface
+     * ParameterValueMappings are responsible for converting from values
+     * extracted from adm parameters to the range of values supported by an
+     * automation envelope, and vice versa
+     */
     class ParameterValueMapping {
     public:
         virtual ~ParameterValueMapping() = default;
         AutomationPoint operator()(AutomationPoint point) const;
         AutomationPoint forwardMap(AutomationPoint point) const;
         AutomationPoint reverseMap(AutomationPoint point) const;
-        virtual double forwardMap(double val) const = 0;
-        virtual double reverseMap(double val) const = 0;
+        virtual ParameterValue forwardMap(ParameterValue val) const = 0;
+        virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     };
-
-
-
 
     class FunctionalMapping : public ParameterValueMapping {
     public:
-        FunctionalMapping();
-        FunctionalMapping(std::function<double(double)> forwardMapper, std::function<double(double)> reverseMapper);
-        using ParameterValueMapping::forwardMap;
-        using ParameterValueMapping::reverseMap;
-        double forwardMap(double val) const override;
-        double reverseMap(double val) const override;
+      FunctionalMapping();
+      FunctionalMapping(
+          std::function<ParameterValue(ParameterValue)> forwardMapper,
+          std::function<ParameterValue(ParameterValue)> reverseMapper);
+      using ParameterValueMapping::forwardMap;
+      using ParameterValueMapping::reverseMap;
+      ParameterValue forwardMap(ParameterValue val) const override;
+      ParameterValue reverseMap(ParameterValue val) const override;
+
     private:
-        std::function<double(double)> forwardMapper;
-        std::function<double(double)> reverseMapper;
+      std::function<ParameterValue(ParameterValue)> forwardMapper;
+      std::function<ParameterValue(ParameterValue)> reverseMapper;
     };
-
-
-
 
     class CompositeMapping : public ParameterValueMapping {
     public:
@@ -47,8 +44,8 @@ namespace admplug {
         CompositeMapping(std::vector<std::shared_ptr<ParameterValueMapping const>> mappings); // I presume with composites, the mappings are the same, we just called the reversemapper of each in reverse order through the vector.
         using ParameterValueMapping::forwardMap;
         using ParameterValueMapping::reverseMap;
-        double forwardMap(double val) const override;
-        double reverseMap(double val) const override;
+        ParameterValue forwardMap(ParameterValue val) const override;
+        ParameterValue reverseMap(ParameterValue val) const override;
         void addMapping(std::shared_ptr<ParameterValueMapping> mapping);
     private:
         std::vector<std::shared_ptr<ParameterValueMapping const>> mappings;
@@ -60,19 +57,17 @@ namespace admplug {
     class Inversion : public ParameterValueMapping {
         using ParameterValueMapping::forwardMap;
         using ParameterValueMapping::reverseMap;
-        double forwardMap(double val) const override;
-        double reverseMap(double val) const override;
+        ParameterValue forwardMap(ParameterValue val) const override;
+        ParameterValue reverseMap(ParameterValue val) const override;
     };
 
     class LinearToDb : public ParameterValueMapping {
     public:
         using ParameterValueMapping::forwardMap;
         using ParameterValueMapping::reverseMap;
-        double forwardMap(double val) const override;
-        double reverseMap(double val) const override;
+        ParameterValue forwardMap(ParameterValue val) const override;
+        ParameterValue reverseMap(ParameterValue val) const override;
     };
-
-
 
     std::shared_ptr<CompositeMapping> getCombinedMapping(std::initializer_list<std::shared_ptr<ParameterValueMapping const>> list);
 

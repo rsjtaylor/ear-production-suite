@@ -20,19 +20,17 @@ AutomationPoint admplug::ParameterValueMapping::reverseMap(AutomationPoint point
     return AutomationPoint(point.time(), point.duration(), reverseMap(point.value()));
 }
 
+FunctionalMapping::FunctionalMapping(
+    std::function<ParameterValue(ParameterValue)> forwardMapper,
+    std::function<ParameterValue(ParameterValue)> reverseMapper)
+    : forwardMapper{forwardMapper}, reverseMapper{reverseMapper} {}
 
-
-
-FunctionalMapping::FunctionalMapping(std::function<double(double)> forwardMapper, std::function<double(double)> reverseMapper) : forwardMapper{ forwardMapper }, reverseMapper{ reverseMapper }
-{
-}
-
-double admplug::FunctionalMapping::forwardMap(double val) const
+ParameterValue admplug::FunctionalMapping::forwardMap(ParameterValue val) const
 {
     return forwardMapper(val);
 }
 
-double admplug::FunctionalMapping::reverseMap(double val) const
+ParameterValue admplug::FunctionalMapping::reverseMap(ParameterValue val) const
 {
     return reverseMapper(val);
 }
@@ -41,7 +39,7 @@ CompositeMapping::CompositeMapping(std::vector<std::shared_ptr<const ParameterVa
 {
 }
 
-double admplug::CompositeMapping::forwardMap(double val) const
+ParameterValue admplug::CompositeMapping::forwardMap(ParameterValue val) const
 {
     for(int i = 0; i < mappings.size(); i++) {
         val = mappings[i]->forwardMap(val);
@@ -49,7 +47,7 @@ double admplug::CompositeMapping::forwardMap(double val) const
     return val;
 }
 
-double admplug::CompositeMapping::reverseMap(double val) const
+ParameterValue admplug::CompositeMapping::reverseMap(ParameterValue val) const
 {
     for(int i = (mappings.size() - 1); i >= 0; i--) {
         val = mappings[i]->reverseMap(val);
@@ -71,15 +69,15 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::modulus() const {
     auto minimum = std::min(min, max);
     auto maximum = std::max(min, max);
     return std::make_shared<FunctionalMapping>(
-        [minimum, maximum](double val){
+        [minimum, maximum](ParameterValue val){
         if(val == maximum || val == minimum) {
             // Prevents values right at extremities getting wrapped
             return val;
         }
         auto range = maximum - minimum;
-        return fmod(val - minimum, range) + minimum;
+        return ParameterValue{fmod(val - minimum, range) + minimum};
     },
-        [](double val) {
+        [](ParameterValue val) {
         // Can't properly undo without original data
         return val;
     }
@@ -90,12 +88,12 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::clipper() const {
     auto minimum = min;
     auto maximum = max;
     return std::make_shared<FunctionalMapping>(
-        [minimum, maximum](double val) {
-        auto clipped = std::max(val, minimum);
+        [minimum, maximum](ParameterValue val) {
+        auto clipped = std::max(val.get(), minimum);
         clipped = std::min(clipped, maximum);
-        return clipped;
+        return ParameterValue{clipped, true};
     },
-        [](double val) {
+        [](ParameterValue val) {
         // Can't properly undo without original data
         return val;
     }
@@ -118,12 +116,12 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::normaliser() const 
 }
 
 
-double admplug::Inversion::forwardMap(double val) const
+ParameterValue admplug::Inversion::forwardMap(ParameterValue val) const
 {
     return -val;
 }
 
-double admplug::Inversion::reverseMap(double val) const
+ParameterValue admplug::Inversion::reverseMap(ParameterValue val) const
 {
     return -val;
 }
@@ -170,7 +168,7 @@ std::shared_ptr<const ParameterValueMapping> map::invert() {
 
 
 
-double LinearToDb::forwardMap(double val) const
+ParameterValue LinearToDb::forwardMap(ParameterValue val) const
 {
     if(val <=0.00001) {
         return -100;
@@ -178,7 +176,7 @@ double LinearToDb::forwardMap(double val) const
     return 20 * log10(val);
 }
 
-double LinearToDb::reverseMap(double val) const
+ParameterValue LinearToDb::reverseMap(ParameterValue val) const
 {
     return pow(10, val/20);
 }

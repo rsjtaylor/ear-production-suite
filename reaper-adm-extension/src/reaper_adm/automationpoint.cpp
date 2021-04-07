@@ -28,7 +28,7 @@ double AutomationPoint::duration() const
     return pointDuration;
 }
 
-double AutomationPoint::value() const
+ParameterValue AutomationPoint::value() const
 {
     return pointValue;
 }

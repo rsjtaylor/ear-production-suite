@@ -43,14 +43,15 @@ class Track;
 class ReaperAPI;
 class AutomationEnvelope;
 
+
 class Parameter
 {
 public:
     virtual ~Parameter() = default;
     AutomationPoint forwardMap(AutomationPoint point) const;
     AutomationPoint reverseMap(AutomationPoint point) const;
-    virtual double forwardMap(double val) const = 0;
-    virtual double reverseMap(double val) const = 0;
+    virtual ParameterValue forwardMap(ParameterValue val) const = 0;
+    virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     virtual AdmParameter admParameter() const = 0;
 };
 
@@ -60,8 +61,8 @@ public:
     using Parameter::forwardMap;
     using Parameter::reverseMap;
     virtual int index() const = 0;
-    virtual double forwardMap(double val) const = 0;
-    virtual double reverseMap(double val) const = 0;
+    virtual ParameterValue forwardMap(ParameterValue val) const = 0;
+    virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     virtual AdmParameter admParameter() const = 0;
     virtual std::unique_ptr<AutomationEnvelope> getEnvelope(Plugin const& plugin) const;
     virtual void set(Plugin const& plugin, double value) const;
@@ -73,8 +74,8 @@ public:
     using Parameter::forwardMap;
     using Parameter::reverseMap;
     virtual TrackParameterType type() const = 0;
-    virtual double forwardMap(double val) const = 0;
-    virtual double reverseMap(double val) const = 0;
+    virtual ParameterValue forwardMap(ParameterValue val) const = 0;
+    virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     virtual AdmParameter admParameter() const = 0;
     virtual std::unique_ptr<AutomationEnvelope> getEnvelope(Track const& track) const;
     virtual void set(Track const& track, double value) const;
@@ -87,8 +88,8 @@ public:
                           std::shared_ptr<ParameterValueMapping const> mapping);
     using PluginParameter::forwardMap;
     using PluginParameter::reverseMap;
-    double forwardMap(double val) const override;
-    double reverseMap(double val) const override;
+    ParameterValue forwardMap(ParameterValue val) const override;
+    ParameterValue reverseMap(ParameterValue val) const override;
     AdmParameter admParameter() const override;
     int index() const override;
 
@@ -103,8 +104,8 @@ public:
     SimplePluginParameter(int parameterIndex, ParameterRange range);
     using PluginParameter::forwardMap;
     using PluginParameter::reverseMap;
-    double forwardMap(double val) const override;
-    double reverseMap(double val) const override;
+    ParameterValue forwardMap(ParameterValue val) const override;
+    ParameterValue reverseMap(ParameterValue val) const override;
     AdmParameter admParameter() const override;
     int index() const override;
 private:
@@ -119,8 +120,8 @@ public:
                          std::shared_ptr<ParameterValueMapping const> mapping);
     using TrackParameter::forwardMap;
     using TrackParameter::reverseMap;
-    double forwardMap(double val) const override;
-    double reverseMap(double val) const override;
+    ParameterValue forwardMap(ParameterValue val) const override;
+    ParameterValue reverseMap(ParameterValue val) const override;
     AdmParameter admParameter() const override;
     TrackParameterType type() const override;
 

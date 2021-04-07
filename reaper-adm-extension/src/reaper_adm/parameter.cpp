@@ -65,11 +65,11 @@ AdmParameter MappedPluginParameter::admParameter() const {
     return parameter;
 }
 
-double MappedPluginParameter::forwardMap(double val) const {
+ParameterValue MappedPluginParameter::forwardMap(ParameterValue val) const {
     return mapping->forwardMap(val);
 }
 
-double admplug::MappedPluginParameter::reverseMap(double val) const
+ParameterValue admplug::MappedPluginParameter::reverseMap(ParameterValue val) const
 {
     return mapping->reverseMap(val);
 }
@@ -87,11 +87,11 @@ AdmParameter MappedTrackParameter::admParameter() const {
     return parameter;
 }
 
-double MappedTrackParameter::forwardMap(double val) const {
+ParameterValue MappedTrackParameter::forwardMap(ParameterValue val) const {
     return mapping->forwardMap(val);
 }
 
-double admplug::MappedTrackParameter::reverseMap(double val) const
+ParameterValue admplug::MappedTrackParameter::reverseMap(ParameterValue val) const
 {
     return mapping->reverseMap(val);
 }
@@ -131,13 +131,13 @@ SimplePluginParameter::SimplePluginParameter(int parameterIndex, ParameterRange 
 {
 }
 
-double admplug::SimplePluginParameter::forwardMap(double val) const
+ParameterValue admplug::SimplePluginParameter::forwardMap(ParameterValue val) const
 {
     auto mapping = map::sequence({parameterRange.clipper(), parameterRange.normaliser()});
     return mapping->forwardMap(val);
 }
 
-double admplug::SimplePluginParameter::reverseMap(double val) const
+ParameterValue admplug::SimplePluginParameter::reverseMap(ParameterValue val) const
 {
     auto mapping = map::sequence({parameterRange.clipper(), parameterRange.normaliser()});
     return mapping->reverseMap(val);
