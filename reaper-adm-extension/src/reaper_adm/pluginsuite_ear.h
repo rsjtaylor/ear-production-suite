@@ -16,7 +16,9 @@ namespace admplug {
         EARPluginSuite();
         ~EARPluginSuite();
 
-        void onProjectBuildBegin(std::shared_ptr<IADMMetaData> metadata,const ReaperAPI &api) override;
+        void onProjectBuildBegin(std::shared_ptr<IADMMetaData> metadata,
+                                 std::shared_ptr<ImportListener> broadcaster,
+                                 const ReaperAPI &api) override;
         void onCreateProject(const ProjectNode &rootNode, const ReaperAPI &api) override;
         void onCreateObjectTrack(const TrackElement &, const ReaperAPI &api) override;
         void onCreateDirectTrack(const TrackElement &, const ReaperAPI &api) override;
@@ -46,6 +48,7 @@ namespace admplug {
         std::shared_ptr<PluginParameter> objectTrackMappingParameter;
         std::shared_ptr<PluginParameter> directSpeakersTrackMappingParameter;
         std::shared_ptr<PluginParameter> directSpeakersLayoutParameter;
+        std::shared_ptr<ImportListener> broadcaster;
         std::unique_ptr<UniqueValueAssigner> trackMappingAssigner;
 
         std::unique_ptr<Track> createBusTrack(std::string pluginName, const ReaperAPI &api);

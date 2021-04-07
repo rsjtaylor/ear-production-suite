@@ -4,6 +4,7 @@
 #include "mocks/projectelements.h"
 #include "mocks/track.h"
 #include "mocks/parametised.h"
+#include "mocks/importlistener.h"
 #include <projectnode.h>
 #include <pluginsuite_ear.h>
 #include <parameter.h>
@@ -324,7 +325,8 @@ namespace {
           EXPECT_CALL(*autoElement, apply(HasParameter(parameter), A<Plugin const &>()));
       }
       initProject(earSuite, api);
-      earSuite.onProjectBuildBegin(getGenericMetadata(), api);
+      auto listener = std::make_shared<MockImportListener>();
+      earSuite.onProjectBuildBegin(getGenericMetadata(), listener, api);
       earSuite.onObjectAutomation(*autoElement, api);
   }
 
@@ -385,7 +387,8 @@ namespace {
       ON_CALL(*track, getPlugin(An<std::string>())).WillByDefault(Return(ByMove(nullptr)));
       ON_CALL(*track, getPlugin(An<int>())).WillByDefault(Return(ByMove(nullptr)));
       EXPECT_CALL(*track, createPlugin(StrEq("EAR DirectSpeakers"))).WillRepeatedly(createPlugin);
-      earSuite.onProjectBuildBegin(getGenericMetadata(), api);
+      auto listener = std::make_shared<MockImportListener>();
+      earSuite.onProjectBuildBegin(getGenericMetadata(), listener, api);
       earSuite.onDirectSpeakersAutomation(autoElement, api);
       SECTION("But not if already present")
       {
@@ -412,7 +415,8 @@ TEST_CASE("Track routed to bus on directspeakers automation") {
     ON_CALL(autoElement, channel()).WillByDefault(Return(channels[0]));
     ON_CALL(*track, createPlugin(StrEq("EAR DirectSpeakers"))).WillByDefault(createPlugin);
     EXPECT_CALL(*track, route(_, _, _, _));
-    earSuite.onProjectBuildBegin(getGenericMetadata(), api);
+    auto listener = std::make_shared<MockImportListener>();
+    earSuite.onProjectBuildBegin(getGenericMetadata(), listener, api);
     earSuite.onDirectSpeakersAutomation(autoElement, api);
 }
 
@@ -451,8 +455,9 @@ TEST_CASE("Tracks are routed sequentially") {
     ON_CALL(*objectTrack, createPlugin(StrEq("EAR Object"))).WillByDefault(createPlugin);
     ON_CALL(*directTrack, createPlugin(StrEq("EAR DirectSpeakers"))).WillByDefault(createPlugin);
 
+    auto listener = std::make_shared<MockImportListener>();
     InSequence();
-    earSuite.onProjectBuildBegin(getGenericMetadata(), api);
+    earSuite.onProjectBuildBegin(getGenericMetadata(), listener, api);
     EXPECT_CALL(*objectTrack, route(_, _, _, 0));
     //earSuite.onCreateObjectTrack(trackElement, api);
     earSuite.onObjectAutomation(*objectAuto, api);

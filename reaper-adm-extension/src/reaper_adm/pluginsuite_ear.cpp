@@ -2,7 +2,6 @@
 #include "cartesianspeakerlayouts.h"
 
 #include <cassert>
-#include <sstream>
 
 #include "reaperapi.h"
 #include "plugin.h"
@@ -11,10 +10,9 @@
 #include "track.h"
 #include "parameter.h"
 #include "admtraits.h"
+#include "progress/importlistener.h"
 #include <adm/adm.hpp>
 #include <adm/write.hpp>
-#include <adm/common_definitions.hpp>
-#include <bw64/bw64.hpp>
 
 using namespace admplug;
 
@@ -186,8 +184,10 @@ EARPluginSuite::EARPluginSuite() :
 
 EARPluginSuite::~EARPluginSuite() = default;
 
-void admplug::EARPluginSuite::onProjectBuildBegin(std::shared_ptr<IADMMetaData> metadata, const ReaperAPI &)
-{
+void admplug::EARPluginSuite::onProjectBuildBegin(
+    std::shared_ptr<IADMMetaData> metadata,
+    std::shared_ptr<ImportListener> listener, const ReaperAPI &) {
+    broadcaster = listener;
     // Prepare trackMappingToAtu vector for population
     trackMappingToAtu = std::vector<uint32_t>(MAX_CHANNEL_COUNT, 0x00000000); // ATUID of 0x00000000 = not used
 
