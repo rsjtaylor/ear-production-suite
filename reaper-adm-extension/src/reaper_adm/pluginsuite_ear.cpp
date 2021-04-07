@@ -289,11 +289,12 @@ void EARPluginSuite::onObjectAutomation(const ObjectAutomation& automationElemen
     auto plugin = track->createPlugin(OBJECT_METADATA_PLUGIN_NAME);
 
     if(plugin) {
-        for(auto &parameter : automatedObjectPluginParameters()) {
-            automationElement.apply(*parameter, *plugin);
-        }
+      for (auto &parameter : automatedObjectPluginParameters()) {
+        // TODO collect/log stats?
+        auto stats = automationElement.apply(*parameter, *plugin);
+      }
 
-        for(auto& parameter : trackParameters()) {
+      for(auto& parameter : trackParameters()) {
             automationElement.apply(*parameter, *track);
         }
 

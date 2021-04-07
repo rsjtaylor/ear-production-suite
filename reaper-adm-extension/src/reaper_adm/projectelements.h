@@ -77,6 +77,10 @@ protected:
     std::shared_ptr<TrackElement> parent;
 };
 
+struct ParameterStats {
+  int clipCount{0};
+};
+
 class AutomationElement : public ProjectElement {
 public:
     virtual ~AutomationElement() = default;
@@ -84,8 +88,8 @@ public:
     virtual std::shared_ptr<Track> getTrack() const = 0;
     virtual std::shared_ptr<TakeElement const> parentTake() const { return parent; }
     virtual ADMChannel channel() const = 0;
-    virtual void apply(PluginParameter const& parameter, Plugin const& plugin) const = 0;
-    virtual void apply(TrackParameter const& parameter, Track const& track) const = 0;
+    virtual ParameterStats apply(PluginParameter const& parameter, Plugin const& plugin) const = 0;
+    virtual ParameterStats apply(TrackParameter const& parameter, Track const& track) const = 0;
 protected:
     std::shared_ptr<TakeElement> parent;
 };

@@ -78,8 +78,8 @@ public:
       std::shared_ptr<TakeElement const>());
   MOCK_CONST_METHOD0(takeChannels, std::vector<ADMChannel>());
   MOCK_CONST_METHOD0(channel, ADMChannel());
-  MOCK_CONST_METHOD2(apply, void(PluginParameter const&, Plugin const&));
-  MOCK_CONST_METHOD2(apply, void(TrackParameter const&, Track const&));
+  MOCK_CONST_METHOD2(apply, ParameterStats(PluginParameter const&, Plugin const&));
+  MOCK_CONST_METHOD2(apply, ParameterStats(TrackParameter const&, Track const&));
 };
 
 class MockDirectSpeakersAutomation : public DirectSpeakersAutomation {
@@ -99,8 +99,8 @@ public:
   MOCK_CONST_METHOD0(takeChannels, std::vector<ADMChannel>());
   MOCK_CONST_METHOD0(channel, ADMChannel());
   MOCK_CONST_METHOD0(channelIndex, int());
-  MOCK_CONST_METHOD2(apply, void(PluginParameter const&, Plugin const&));
-  MOCK_CONST_METHOD2(apply, void(TrackParameter const&, Track const&));
+  MOCK_CONST_METHOD2(apply, ParameterStats(PluginParameter const&, Plugin const&));
+  MOCK_CONST_METHOD2(apply, ParameterStats(TrackParameter const&, Track const&));
 };
 }  // namespace admplug
 

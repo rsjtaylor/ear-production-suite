@@ -47,12 +47,14 @@ int getBlockOrder(adm::AudioBlockFormatHoa block) {
     return block.get<adm::Order>().get();
 }
 
-void HoaAutomationElement::apply(const PluginParameter &parameter, const Plugin &plugin) const {
+ParameterStats HoaAutomationElement::apply(const PluginParameter &parameter, const Plugin &plugin) const {
     detail::applyAutomation(pointsFor(parameter), startTime(), parameter, plugin);
+    return {};
 }
 
-void HoaAutomationElement::apply(const TrackParameter &parameter, const Track &track) const {
+ParameterStats HoaAutomationElement::apply(const TrackParameter &parameter, const Track &track) const {
     detail::applyAutomation(pointsFor(parameter), startTime(), parameter, track);
+    return {};
 }
 
 std::vector<AutomationPoint> HoaAutomationElement::pointsFor(Parameter const& parameter) const {

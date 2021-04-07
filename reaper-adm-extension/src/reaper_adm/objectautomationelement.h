@@ -19,8 +19,8 @@ public:
     double startTime() const override;
     std::shared_ptr<Track> getTrack() const override;
     ADMChannel channel() const override;
-    void apply(const PluginParameter &parameter, const Plugin &plugin) const override;
-    void apply(const TrackParameter &parameter, const Track &track) const override;
+    ParameterStats apply(const PluginParameter &parameter, const Plugin &plugin) const override;
+    ParameterStats apply(const TrackParameter &parameter, const Track &track) const override;
 private:
     std::vector<adm::ElementConstVariant> getAdmElements() const override;
     std::vector<AutomationPoint> pointsFor(const Parameter &parameter) const;

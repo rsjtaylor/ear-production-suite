@@ -173,10 +173,30 @@ void setPoint(AutomationPoint const& point, Parameter& parameter, AutomatableT& 
     automatable.set(parameter, point);
 }
 
-void admplug::ObjectAutomationElement::apply(const PluginParameter& parameter, const Plugin& plugin) const {
-    detail::applyAutomation(pointsFor(parameter), startTime(), parameter, plugin);
+namespace {
+  ParameterStats getStatsFor(std::vector<AutomationPoint> const& points) {
+    ParameterStats stats;
+    for (auto const &point : points) {
+      if (point.value().wasClipped()) {
+        ++stats.clipCount;
+      }
+    }
+    return stats;
+  }
 }
 
-void admplug::ObjectAutomationElement::apply(const TrackParameter& parameter, const Track& track) const {
-    detail::applyAutomation(pointsFor(parameter), startTime(), parameter, track);
+ParameterStats
+admplug::ObjectAutomationElement::apply(const PluginParameter &parameter,
+                                        const Plugin &plugin) const {
+  auto points = pointsFor(parameter);
+  detail::applyAutomation(points, startTime(), parameter, plugin);
+  return getStatsFor(points);
+}
+
+ParameterStats
+admplug::ObjectAutomationElement::apply(const TrackParameter &parameter,
+                                        const Track &track) const {
+  auto points = pointsFor(parameter);
+  detail::applyAutomation(points, startTime(), parameter, track);
+  return getStatsFor(points);
 }

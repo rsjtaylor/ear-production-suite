@@ -74,14 +74,18 @@ int DirectSpeakersAutomationElement::channelIndex() const
     return static_cast<int>(location - chans.cbegin());
 }
 
-void DirectSpeakersAutomationElement::apply(const PluginParameter &parameter, const Plugin &plugin) const
-{
-    detail::applyAutomation(pointsFor(parameter), startTime(), parameter, plugin);
+ParameterStats
+DirectSpeakersAutomationElement::apply(const PluginParameter &parameter,
+                                       const Plugin &plugin) const {
+  detail::applyAutomation(pointsFor(parameter), startTime(), parameter, plugin);
+  return {};
 }
 
-void DirectSpeakersAutomationElement::apply(const TrackParameter &parameter, const Track &track) const
-{
-    detail::applyAutomation(pointsFor(parameter), startTime(), parameter, track);
+ParameterStats
+DirectSpeakersAutomationElement::apply(const TrackParameter &parameter,
+                                       const Track &track) const {
+  detail::applyAutomation(pointsFor(parameter), startTime(), parameter, track);
+  return {};
 }
 
 std::vector<adm::ElementConstVariant> DirectSpeakersAutomationElement::getAdmElements() const

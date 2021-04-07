@@ -17,8 +17,8 @@ public:
     std::vector<ADMChannel> takeChannels() const override;
     ADMChannel channel() const override;
     int channelIndex() const override;
-    void apply(const PluginParameter &parameter, const Plugin &plugin) const override;
-    void apply(const TrackParameter &parameter, const Track &track) const override;
+    ParameterStats apply(const PluginParameter &parameter, const Plugin &plugin) const override;
+    ParameterStats apply(const TrackParameter &parameter, const Track &track) const override;
 
 private:
     std::vector<adm::ElementConstVariant> getAdmElements() const override;
