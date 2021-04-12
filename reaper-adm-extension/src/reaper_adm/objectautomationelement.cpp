@@ -1,4 +1,4 @@
-﻿#include <optional>
+#include <optional>
 #include <tuple>
 #include "objectautomationelement.h"
 #include "automationenvelope.h"
@@ -177,7 +177,7 @@ namespace {
   ParameterStats getStatsFor(std::vector<AutomationPoint> const& points) {
     ParameterStats stats;
     for (auto const &point : points) {
-      if (point.value().wasClipped()) {
+      if (point.value().clipped) {
         ++stats.clipCount;
       }
     }
