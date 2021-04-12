@@ -14,7 +14,7 @@ AutomationPoint::AutomationPoint(std::chrono::nanoseconds timeNs, std::chrono::n
     pointValue{val} {
 }
 
-AutomationPoint::AutomationPoint(double timeSeconds, double duration, double val) : pointTime{timeSeconds}, pointDuration{duration}, pointValue{val}
+AutomationPoint::AutomationPoint(double timeSeconds, double duration, ParameterValue val) : pointTime{timeSeconds}, pointDuration{duration}, pointValue{val}
 {
 }
 

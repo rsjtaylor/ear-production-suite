@@ -7,14 +7,15 @@ class ParameterValue {
 public:
   ParameterValue(double value) : value{value}, clipped{false} {}
   ParameterValue(double value, bool clipped) : value{value}, clipped{clipped} {}
+  ParameterValue(const ParameterValue& obj) : value{obj.value}, clipped{obj.clipped} {}
   double get() const { return value; }
   operator double() const { return get(); }
-  bool wasClipped() const { return clipped; }
-  void setClipped() { clipped = true; }
+ 
+  bool clipped;
 
 private:
   double value;
-  bool clipped;
+  
 };
 
 
@@ -23,7 +24,7 @@ class AutomationPoint
 public:
   explicit AutomationPoint(double val);
     AutomationPoint(std::chrono::nanoseconds timeNs, std::chrono::nanoseconds duration, double val);
-    AutomationPoint(double timeSeconds, double duration, double val);
+    AutomationPoint(double timeSeconds, double duration, ParameterValue val);
     double time() const;
     double duration() const;
     ParameterValue value() const;
