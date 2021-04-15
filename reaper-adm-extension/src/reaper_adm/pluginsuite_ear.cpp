@@ -301,7 +301,7 @@ void EARPluginSuite::onObjectAutomation(const ObjectAutomation& automationElemen
         assert(trackMappingAssigner);
         auto trackMapping = trackMappingAssigner->getNextAvailableValue();
         if(trackMapping.has_value()) {
-            plugin->setParameter(*objectTrackMappingParameter, objectTrackMappingParameter->forwardMap(*trackMapping));
+            plugin->setParameter(*objectTrackMappingParameter, objectTrackMappingParameter->forwardMap(ParameterValue(*trackMapping)));
             assert(sceneMasterTrack);
             track->routeTo(*sceneMasterTrack, 1, 0, *trackMapping);
 
@@ -341,12 +341,12 @@ void EARPluginSuite::onDirectSpeakersAutomation(const DirectSpeakersAutomation &
             assert(channelCountTake == channelCountPackFormat); // Possibly not the same? Need to figure out how to deal with this
             auto channelCount = channelCountTake;
             track->setChannelCount(channelCount);
-            plugin->setParameter(*directSpeakersLayoutParameter, directSpeakersLayoutParameter->forwardMap(*speakerLayout));
+            plugin->setParameter(*directSpeakersLayoutParameter, directSpeakersLayoutParameter->forwardMap(ParameterValue(*speakerLayout)));
 
             assert(trackMappingAssigner);
             auto trackMapping = trackMappingAssigner->getNextAvailableValue(channelCount);
             if(trackMapping.has_value()) {
-                plugin->setParameter(*directSpeakersTrackMappingParameter, directSpeakersTrackMappingParameter->forwardMap(*trackMapping));
+                plugin->setParameter(*directSpeakersTrackMappingParameter, directSpeakersTrackMappingParameter->forwardMap(ParameterValue(*trackMapping)));
                 track->routeTo(*sceneMasterTrack, channelCount, 0, *trackMapping);
 
                 // Store mapping to send to EAR Scene - these should be ordered, so we can assume we just step through them

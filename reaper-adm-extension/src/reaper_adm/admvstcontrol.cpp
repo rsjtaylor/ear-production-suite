@@ -97,7 +97,7 @@ bool AdmVst::getIncludeInRenderState() {
 }
 
 void AdmVst::setIncludeInRenderState(bool state) {
-    setParameter(*paramIncludeInRender, state ? 1.0 : 0.0);
+    setParameter(*paramIncludeInRender, state ? ParameterValue(1.0) : ParameterValue(0.0));
 }
 
 adm::TypeDescriptor AdmVst::getAdmType() {
@@ -108,7 +108,7 @@ adm::TypeDescriptor AdmVst::getAdmType() {
 
 void AdmVst::setAdmType(adm::TypeDescriptor admType) {
     int admTypeInt = std::stoi(formatTypeLabel(admType), nullptr, 16);
-    double admTypeParamVal = paramAdmTypeDefinition->forwardMap((double)admTypeInt);
+    auto admTypeParamVal = paramAdmTypeDefinition->forwardMap(ParameterValue(admTypeInt));
     setParameter(*paramAdmTypeDefinition, admTypeParamVal);
 }
 
@@ -133,7 +133,7 @@ int AdmVst::getAdmTypeDefinition()
 
 void AdmVst::setAdmTypeDefinition(int typeDefinition)
 {
-    setParameterWithConvert(*paramAdmTypeDefinition, (double)typeDefinition);
+    setParameterWithConvert(*paramAdmTypeDefinition, ParameterValue(typeDefinition));
 }
 
 int AdmVst::getAdmPackFormat()
@@ -145,7 +145,7 @@ int AdmVst::getAdmPackFormat()
 
 void AdmVst::setAdmPackFormat(int packFormat)
 {
-    setParameterWithConvert(*paramAdmPackFormat, (double)packFormat);
+    setParameterWithConvert(*paramAdmPackFormat, ParameterValue(packFormat));
 }
 
 int AdmVst::getAdmChannelFormat()
@@ -157,7 +157,7 @@ int AdmVst::getAdmChannelFormat()
 
 void AdmVst::setAdmChannelFormat(int channelFormat)
 {
-    setParameterWithConvert(*paramAdmChannelFormat, (double)channelFormat);
+    setParameterWithConvert(*paramAdmChannelFormat, ParameterValue(channelFormat));
 }
 
 bool AdmVst::isUsingCommonDefinition()

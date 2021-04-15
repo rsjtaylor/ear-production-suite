@@ -73,7 +73,7 @@ std::vector<admplug::AutomationPoint> admplug::detail::simplify(const std::vecto
         for(auto currentPos = points.cbegin() + 1, end = points.cend(); currentPos != end; ++currentPos) {
             auto const& current = *currentPos;
             auto const& previous = *(currentPos - 1);
-            if(current.value() != previous.value()) {
+            if(current.value().get() != previous.value().get()) {
                 if(!previousCopied) {
                     filtered.push_back(previous);
                 }

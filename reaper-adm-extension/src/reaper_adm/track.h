@@ -5,6 +5,7 @@
 #include "reaperguid.h"
 #include "reaperapi.h"
 #include "color.h"
+#include "automationpoint.h"
 
 class MediaTrack;
 
@@ -29,7 +30,7 @@ public:
     virtual std::unique_ptr<Plugin> getPlugin(int index) = 0;
     virtual std::vector<std::unique_ptr<Plugin>> getPlugins(std::string pluginName) = 0;
     virtual std::vector<std::unique_ptr<Plugin>> getPlugins() = 0;
-    virtual void setParameter(TrackParameter const& parameter, double value) const = 0;
+    virtual void setParameter(TrackParameter const& parameter, ParameterValue value) const = 0;
     virtual void setAsVCASlave(TrackGroup const& group) = 0;
     virtual void setAsVCAMaster(const TrackGroup &group) = 0;
     virtual void setColor(const Color color) = 0;
@@ -59,7 +60,7 @@ public:
     std::unique_ptr<Plugin> getPlugin(int index) override;
     std::vector<std::unique_ptr<Plugin>> getPlugins(std::string pluginName) override;
     std::vector<std::unique_ptr<Plugin>> getPlugins() override;
-    void setParameter(TrackParameter const& parameter, double value) const override;
+    void setParameter(TrackParameter const& parameter, ParameterValue value) const override;
     void setAsVCASlave(TrackGroup const& group) override;
     void setAsVCAMaster(const TrackGroup &group) override;
     void setColor(const Color color) override;

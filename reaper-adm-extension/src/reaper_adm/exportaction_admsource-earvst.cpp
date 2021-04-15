@@ -197,7 +197,7 @@ void EarVstExportSources::generateAdmAndChna(ReaperAPI const& api)
                 if (getEnvelopeBypassed(env, api)) { 
                     // We have an envelope, but it is bypassed
                     auto val = getValueFor(pluginSuite, pluginInst.get(), admParameter, api);
-                    auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, *val);
+                    auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, val->get());
                     for (auto& newError : newErrors) {
                         warningStrings.push_back(newError.what());
                     }
@@ -211,7 +211,7 @@ void EarVstExportSources::generateAdmAndChna(ReaperAPI const& api)
                 } else if(auto val = getValueFor(pluginSuite, pluginInst.get(), admParameter, api)) {
                     // We do not have an envelope for this ADM parameter but the plugin suite CAN provide a fixed value for it
                     // NOTE that this will include parameters NOT relevant to the current audioObject type, but these are ignored during block creation.
-                    auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, *val);
+                    auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, val->get());
                     for(auto &newError : newErrors) {
                         warningStrings.push_back(newError.what());
                     }
@@ -351,7 +351,7 @@ TrackEnvelope* EarVstExportSources::getEnvelopeFor(std::shared_ptr<admplug::Plug
     return nullptr;
 }
 
-std::optional<double> EarVstExportSources::getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance * pluginInst, AdmParameter admParameter, ReaperAPI const & api)
+std::optional<ParameterValue> EarVstExportSources::getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance * pluginInst, AdmParameter admParameter, ReaperAPI const & api)
 {
     MediaTrack* track = pluginInst->getTrackInstance().get();
 
@@ -360,7 +360,7 @@ std::optional<double> EarVstExportSources::getValueFor(std::shared_ptr<admplug::
         return pluginInst->getParameterWithConvert(*param);
     }
 
-    return std::optional<double>();
+    return {};
 }
 
 bool EarVstExportSources::getEnvelopeBypassed(TrackEnvelope* env, ReaperAPI const& api)

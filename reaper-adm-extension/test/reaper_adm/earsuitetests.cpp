@@ -11,6 +11,12 @@
 #include <adm/utilities/object_creation.hpp>
 #include <adm/adm.hpp>
 #include <adm/common_definitions.hpp>
+namespace admplug {
+bool operator==(ParameterValue const &lhs, ParameterValue const &rhs) {
+  return lhs.get() == rhs.get() && lhs.wasClipped() == rhs.wasClipped();
+}
+}
+
 
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -339,7 +345,7 @@ namespace {
 
       ON_CALL(trackElement, getTrack()).WillByDefault(Return(track));
 
-      const double FIRST_INDEX = 1.0 / 64.0; // from 0 to 1 inclusive with 65 steps (-1 to 63), -1 == unmapped so first should be step after 0.
+      const auto FIRST_INDEX = ParameterValue{1.0 / 64.0}; // from 0 to 1 inclusive with 65 steps (-1 to 63), -1 == unmapped so first should be step after 0.
       const int TRACK_MAPPING_PARAMETER = 0;
 
       auto createPlugin = [=](std::string) {

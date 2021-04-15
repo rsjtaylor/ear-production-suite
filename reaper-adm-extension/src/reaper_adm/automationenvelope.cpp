@@ -33,7 +33,7 @@ void DefinedStartEnvelope::createPoints(double pointsOffset)
         if (earliestPointOnTimeline < 0.0 || pointOnTimeline < earliestPointOnTimeline) {
             earliestPointOnTimeline = pointOnTimeline;
         }
-        api.InsertEnvelopePoint(trackEnvelope, pointOnTimeline, point.value(), 0, 0, false, &sortPoints);
+        api.InsertEnvelopePoint(trackEnvelope, pointOnTimeline, point.value().get(), 0, 0, false, &sortPoints);
     }
     api.Envelope_SortPoints(trackEnvelope);
 
@@ -78,13 +78,13 @@ void WrappingEnvelope::createPoints(double pointsOffset)
 
 void WrappingEnvelope::addDiscontinuityPoints(AutomationPoint const& point) {
   auto& points = automationEnvelope.getPoints();
-    auto value = point.value();
+    auto value = point.value().get();
     auto startTime = point.time();
     auto duration = point.duration();
     auto effectiveTime = startTime + duration;
 
     auto& previousPoint = points.back();
-    auto previousValue = previousPoint.value();
+    auto previousValue = previousPoint.value().get();
     auto previousStartTime = previousPoint.time();
     auto previousDuration = previousPoint.duration();
     auto previousEffectiveTime = previousStartTime + previousDuration;
@@ -99,10 +99,10 @@ void WrappingEnvelope::addDiscontinuityPoints(AutomationPoint const& point) {
         auto wrapDuration = wrapDurationProportion * duration;
         auto wrapTime = startTime + wrapDuration;
         if(previousEffectiveTime != startTime || previousValue != 1.0) {
-            automationEnvelope.addPoint(AutomationPoint{ startTime, wrapDuration, 1.0 });
+            automationEnvelope.addPoint(AutomationPoint{ startTime, wrapDuration, ParameterValue{1.0} });
         }
         if(effectiveTime != wrapTime || value != 0.0) {
-            automationEnvelope.addPoint(AutomationPoint{ wrapTime, 0.0, 0.0 });
+            automationEnvelope.addPoint(AutomationPoint{ wrapTime, 0.0, ParameterValue{0.0} });
         }
       }
     }
@@ -114,10 +114,10 @@ void WrappingEnvelope::addDiscontinuityPoints(AutomationPoint const& point) {
         auto wrapDuration = wrapDurationProportion * duration;
         auto wrapTime = startTime + wrapDuration;
         if(previousEffectiveTime != startTime || previousValue != 0.0) {
-            automationEnvelope.addPoint(AutomationPoint{ startTime, wrapDuration, 0.0 });
+            automationEnvelope.addPoint(AutomationPoint{ startTime, wrapDuration, ParameterValue{0.0} });
         }
         if(effectiveTime != wrapTime || value != 1.0) {
-            automationEnvelope.addPoint(AutomationPoint{ wrapTime, 0.0, 1.0 });
+            automationEnvelope.addPoint(AutomationPoint{ wrapTime, 0.0, ParameterValue{1.0} });
         }
       }
     }

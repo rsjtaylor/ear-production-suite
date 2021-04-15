@@ -70,12 +70,12 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::modulus() const {
     auto maximum = std::max(min, max);
     return std::make_shared<FunctionalMapping>(
         [minimum, maximum](ParameterValue val){
-        if(val == maximum || val == minimum) {
+        if(val.get() == maximum || val.get() == minimum) {
             // Prevents values right at extremities getting wrapped
             return val;
         }
         auto range = maximum - minimum;
-        return ParameterValue{fmod(val - minimum, range) + minimum};
+        return ParameterValue{fmod(val.get() - minimum, range) + minimum, val.wasClipped()};
     },
         [](ParameterValue val) {
         // Can't properly undo without original data
@@ -104,13 +104,13 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::normaliser() const 
     auto minimum = min;
     auto maximum = max;
     return std::make_shared<FunctionalMapping>(
-        [minimum, maximum](double val) {
+        [minimum, maximum](ParameterValue val) {
         auto range = maximum - minimum;
-        return ((val - minimum) / range);
+        return ParameterValue((val.get() - minimum) / range, val.wasClipped());
     },
-        [minimum, maximum](double val) {
+        [minimum, maximum](ParameterValue val) {
         auto range = maximum - minimum;
-        return ((val * range) + minimum);
+        return ParameterValue((val.get() * range) + minimum, val.wasClipped());
     }
     );
 }
@@ -118,12 +118,12 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::normaliser() const 
 
 ParameterValue admplug::Inversion::forwardMap(ParameterValue val) const
 {
-    return -val;
+    return ParameterValue(-val.get(), val.wasClipped());
 }
 
 ParameterValue admplug::Inversion::reverseMap(ParameterValue val) const
 {
-    return -val;
+    return ParameterValue(-val.get(), val.wasClipped());
 }
 
 
@@ -170,13 +170,16 @@ std::shared_ptr<const ParameterValueMapping> map::invert() {
 
 ParameterValue LinearToDb::forwardMap(ParameterValue val) const
 {
-    if(val <=0.00001) {
-        return -100;
+  double db(0);
+    if(val.get() <=0.00001) {
+      db = -100;
+    } else {
+      db = 20.0 * log10(val.get());
     }
-    return 20 * log10(val);
+    return ParameterValue(db, val.wasClipped());
 }
 
 ParameterValue LinearToDb::reverseMap(ParameterValue val) const
 {
-    return pow(10, val/20);
+    return ParameterValue(pow(10, val.get()/20), val.wasClipped());
 }

@@ -169,7 +169,7 @@ void VisrPluginSuite::setupTrackWithMetadataPlugin(Track& track, ReaperAPI const
 
     if(objectId.has_value()) {
         auto plugin = track.createPlugin(OBJECT_METADATA_PLUGIN_NAME);
-        plugin->setParameter(*objectIdParameter, objectIdParameter->forwardMap(*objectId));
+        plugin->setParameter(*objectIdParameter, objectIdParameter->forwardMap(ParameterValue(*objectId)));
         track.routeTo(*busTrack3D, 1, 0, *objectId - 1); //Object IDs are 1-based, channels are 0-based
 
     } else {

@@ -40,7 +40,7 @@ std::unique_ptr<AutomationEnvelope> PluginParameter::getEnvelope(const Plugin &p
     return plugin.getEnvelope(*this, creator);
 }
 
-void PluginParameter::set(const Plugin &plugin, double value) const
+void PluginParameter::set(const Plugin &plugin, ParameterValue value) const
 {
     plugin.setParameter(*this, value);
 }
@@ -51,7 +51,7 @@ std::unique_ptr<AutomationEnvelope> TrackParameter::getEnvelope(const Track &tra
     return track.getEnvelope(*this, creator);
 }
 
-void TrackParameter::set(const Track &track, double value) const
+void TrackParameter::set(const Track &track, ParameterValue value) const
 {
     track.setParameter(*this, value);
 }

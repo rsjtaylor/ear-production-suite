@@ -20,7 +20,7 @@ public:
     MOCK_METHOD1(getPlugin, std::unique_ptr<Plugin>(int pluginIndex));
     MOCK_METHOD1(getPlugins, std::vector<std::unique_ptr<Plugin>>(std::string pluginName));
     MOCK_METHOD0(getPlugins, std::vector<std::unique_ptr<Plugin>>());
-    MOCK_CONST_METHOD2(setParameter, void(TrackParameter const&, double value));
+    MOCK_CONST_METHOD2(setParameter, void(TrackParameter const&, ParameterValue value));
     MOCK_METHOD1(setAsVCASlave, void(TrackGroup const&));
     MOCK_METHOD1(setAsVCAMaster, void(TrackGroup const&));
     MOCK_METHOD1(setColor, void(Color));

@@ -65,7 +65,7 @@ public:
     virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     virtual AdmParameter admParameter() const = 0;
     virtual std::unique_ptr<AutomationEnvelope> getEnvelope(Plugin const& plugin) const;
-    virtual void set(Plugin const& plugin, double value) const;
+    virtual void set(Plugin const& plugin, ParameterValue value) const;
 };
 
 class TrackParameter : public Parameter {
@@ -78,7 +78,7 @@ public:
     virtual ParameterValue reverseMap(ParameterValue val) const = 0;
     virtual AdmParameter admParameter() const = 0;
     virtual std::unique_ptr<AutomationEnvelope> getEnvelope(Track const& track) const;
-    virtual void set(Track const& track, double value) const;
+    virtual void set(Track const& track, ParameterValue value) const;
 };
 
 class MappedPluginParameter : public PluginParameter {

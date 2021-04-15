@@ -79,7 +79,7 @@ private:
     std::shared_ptr<AdmSubgraphElements> newAdmSubgraph(ReaperAPI const& api, std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* plugin, std::string suffix = std::string(), adm::FormatDescriptor format = adm::FormatDefinition::PCM);
     void newAdmCommonDefinitionReference(ReaperAPI const& api, std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* spatPlugin);
     TrackEnvelope* getEnvelopeFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* pluginInst, AdmParameter admParameter, ReaperAPI const & api);
-    std::optional<double> getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* pluginInst, AdmParameter admParameter, ReaperAPI const & api);
+    std::optional<ParameterValue> getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* pluginInst, AdmParameter admParameter, ReaperAPI const & api);
 
     bool checkPluginPositions(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* pluginInst);
     void createAndAddAudioBlocks(adm::TypeDescriptor typeDescriptor, std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance* pluginInst, std::shared_ptr<AdmSubgraphElements> subgraph, ReaperAPI const& api);

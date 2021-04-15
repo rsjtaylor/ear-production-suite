@@ -18,7 +18,7 @@ class MockPluginParameter : public PluginParameter {
    MOCK_CONST_METHOD1(reverseMap, double(double));
    MOCK_CONST_METHOD0(admParameter, AdmParameter());
    MOCK_CONST_METHOD1(getEnvelope, std::unique_ptr<AutomationEnvelope>(Plugin const&));
-   MOCK_CONST_METHOD2(set, void(Plugin const& plugin, double value));
+   MOCK_CONST_METHOD2(set, void(Plugin const& plugin, ParameterValue value));
 };
 
 class MockTrackParameter : public TrackParameter {

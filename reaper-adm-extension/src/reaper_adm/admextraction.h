@@ -83,7 +83,7 @@ std::optional<AutomationPoint> getPoint(Parameter const& param, BlockT const& bl
     auto [start, duration] = getStartAndDuration(block);
     auto value = getAdmComponent<ParameterChain...>(block);
     if(value) {
-        return param.forwardMap(AutomationPoint(start, duration, static_cast<double>(*value)));
+        return param.forwardMap(AutomationPoint(start, duration, ParameterValue{static_cast<double>(*value)}));
     }
     return std::optional<AutomationPoint>{};
 }
@@ -226,7 +226,7 @@ std::optional<AutomationPoint> convertSphericalPoint(Parameter const& param, Blo
     if(converter) {
         auto [start, duration] = getStartAndDuration(block);
         auto value = converter->template get<ComponentT>();
-        return param.forwardMap(AutomationPoint{start, duration, value});
+        return param.forwardMap(AutomationPoint{start, duration, ParameterValue{value}});
     }
     return std::optional<AutomationPoint>{};
 }

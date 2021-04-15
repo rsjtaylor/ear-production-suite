@@ -98,10 +98,10 @@ std::vector<std::unique_ptr<Plugin>> admplug::TrackInstance::getPlugins()
     return std::move(pluginMatches);
 }
 
-void TrackInstance::setParameter(const TrackParameter &parameter, double value) const
+void TrackInstance::setParameter(const TrackParameter &parameter, ParameterValue value) const
 {
     if(parameter.type() == TrackParameterType::VOLUME) {
-        api.SetMediaTrackInfo_Value(track, "D_VOL", value);
+        api.SetMediaTrackInfo_Value(track, "D_VOL", value.get());
     }
 }
 

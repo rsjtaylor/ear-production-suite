@@ -6,12 +6,12 @@
 
 namespace admplug {
 std::ostream& operator<<(std::ostream& os, AutomationPoint const& point) {
-    os << "{value: " << point.value() << ", start: " << point.time() << ", duration: " << point.duration() << "}";
+    os << "{value: " << point.value().get() << ", start: " << point.time() << ", duration: " << point.duration() << "}";
     return os;
 }
 
 bool approxEqual(AutomationPoint const& lhs, AutomationPoint const& rhs) {
-    return fabs(rhs.value() - lhs.value()) < 0.00001f;
+    return fabs(rhs.value().get() - lhs.value().get()) < 0.00001f;
 }
 
 bool operator==(AutomationPoint const& lhs, AutomationPoint const& rhs) {
@@ -60,7 +60,7 @@ private:
         points.reserve(values.size());
         std::transform(values.begin(), values.end(), std::back_inserter(points), [&incrementor](float value){
             auto[start, duration] = incrementor();
-            return AutomationPoint(start, duration, value);
+            return AutomationPoint(start, duration, ParameterValue(value));
         });
         return points;
     }

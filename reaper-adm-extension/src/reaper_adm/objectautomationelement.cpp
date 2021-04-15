@@ -189,14 +189,16 @@ ParameterStats
 admplug::ObjectAutomationElement::apply(const PluginParameter &parameter,
                                         const Plugin &plugin) const {
   auto points = pointsFor(parameter);
+  auto stats = getStatsFor(points);
   detail::applyAutomation(points, startTime(), parameter, plugin);
-  return getStatsFor(points);
+  return stats;
 }
 
 ParameterStats
 admplug::ObjectAutomationElement::apply(const TrackParameter &parameter,
                                         const Track &track) const {
   auto points = pointsFor(parameter);
+  auto stats = getStatsFor(points);
   detail::applyAutomation(points, startTime(), parameter, track);
-  return getStatsFor(points);
+  return stats;
 }

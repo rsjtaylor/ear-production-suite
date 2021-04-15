@@ -5,10 +5,34 @@
 namespace admplug {
 class ParameterValue {
 public:
-  ParameterValue(double value) : value{value}, clipped{false} {}
+  explicit ParameterValue(double value) : value{value}, clipped{false} {}
   ParameterValue(double value, bool clipped) : value{value}, clipped{clipped} {}
   double get() const { return value; }
-  operator double() const { return get(); }
+  bool operator< (double other) const {
+    return get() < other;
+  }
+  bool operator<= (double other) const {
+    return get() <= other;
+  }
+  bool operator> (double other) const {
+    return get() > other;
+  }
+  bool operator>= (double other) const {
+    return get() >= other;
+  }
+  bool operator== (double other) const {
+    return get() == other;
+  }
+  bool operator!= (double other) const {
+    return get() != other;
+  }
+//  double operator+ (double other) const {
+//    return get() + other;
+//  }
+//  double operator- (double other) const {
+//    return get() - other;
+//  }
+//  operator double() const { return get(); }
   bool wasClipped() const { return clipped; }
   void setClipped() { clipped = true; }
 
@@ -21,9 +45,9 @@ private:
 class AutomationPoint
 {
 public:
-  explicit AutomationPoint(double val);
-    AutomationPoint(std::chrono::nanoseconds timeNs, std::chrono::nanoseconds duration, double val);
-    AutomationPoint(double timeSeconds, double duration, double val);
+  explicit AutomationPoint(ParameterValue val);
+    AutomationPoint(std::chrono::nanoseconds timeNs, std::chrono::nanoseconds duration, ParameterValue val);
+    AutomationPoint(double timeSeconds, double duration, ParameterValue val);
     double time() const;
     double duration() const;
     ParameterValue value() const;

@@ -42,43 +42,45 @@ std::unique_ptr<AutomationEnvelope> PluginInstance::getEnvelope(const PluginPara
     return creator.create(trackEnvelope, api);
 }
 
-void PluginInstance::setParameter(const PluginParameter &parameter, double value) const
+void PluginInstance::setParameter(const PluginParameter &parameter,
+                                  ParameterValue value) const
 {
     auto index = getPluginIndex();
     if(!(index < 0)) {
-      api.TrackFX_SetParam(track.get(), index, parameter.index(), value);
+      api.TrackFX_SetParam(track.get(), index, parameter.index(), value.get());
     }
 }
 
-void admplug::PluginInstance::setParameterWithConvert(PluginParameter const & parameter, double value) const
+void admplug::PluginInstance::setParameterWithConvert(PluginParameter const & parameter, ParameterValue value) const
 {
     setParameter(parameter, parameter.forwardMap(value));
 }
 
-std::optional<double> PluginInstance::getParameter(const PluginParameter &parameter) const {
+std::optional<ParameterValue>
+PluginInstance::getParameter(const PluginParameter &parameter) const {
     auto index = getPluginIndex();
     if(index < 0) {
-        return std::optional<double>{};
+        return {};
     }
-    auto value = api.TrackFX_GetParamNormalized(track.get(), index, parameter.index());
-    if(value < 0) {
-        return std::optional<double>{};
+    auto value = ParameterValue{api.TrackFX_GetParamNormalized(track.get(), index, parameter.index())};
+    if(value.get() < 0) {
+        return {};
     }
     return value;
 }
 
-std::optional<double> admplug::PluginInstance::getParameterWithConvert(const PluginParameter & parameter) const
+std::optional<ParameterValue> admplug::PluginInstance::getParameterWithConvert(const PluginParameter & parameter) const
 {
     auto raw = getParameter(parameter);
-    if(!raw.has_value()) return raw;
-    return std::optional<double>(parameter.reverseMap(*raw));
+    if(!raw.has_value()) return {};
+    return std::optional<ParameterValue>(parameter.reverseMap(ParameterValue{*raw}));
 }
 
 std::optional<int> admplug::PluginInstance::getParameterWithConvertToInt(const PluginParameter & parameter) const
 {
     auto optVal = getParameterWithConvert(parameter);
-    if(!optVal.has_value()) return optVal;
-    int val = (int)std::round(*optVal);
+    if(!optVal.has_value()) return {};
+    int val = (int)std::round(optVal->get());
     return std::optional<int>(val);
 }
 

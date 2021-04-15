@@ -110,11 +110,11 @@ std::vector<AdmAuthoringError> CumulatedPointData::useEnvelopeDataForParameter(T
                 if(pointTime >= 0.0) {
                     if(normValueToPreceed.has_value()) {
                         // Store a point using the previous points value - used to hold envelopes for square shapes.
-                        newPointData(pointTime, admParameter, parameter.reverseMap(*normValueToPreceed));
+                        newPointData(pointTime, admParameter, parameter.reverseMap(ParameterValue{*normValueToPreceed}).get());
                         normValueToPreceed.reset();
                     }
                     // Store current point
-                    newPointData(pointTime, admParameter, parameter.reverseMap(normValue));
+                    newPointData(pointTime, admParameter, parameter.reverseMap(ParameterValue{normValue}).get());
                     // Behaviour dependent on current envelope shape
                     if(shape == EnvelopeShape::Square) {
                         normValueToPreceed = normValue;
@@ -168,16 +168,16 @@ std::vector<AdmAuthoringError> CumulatedPointData::useEnvelopeDataForParameter(T
                 double endTime = allPointTimes[pointTimeIndex + 1];
                 auto startValues = getValuesForParameterAtTime(startTime, admParameter);
                 auto endValues = getValuesForParameterAtTime(endTime, admParameter);
-                double startValueNorm = parameter.forwardMap(startValues.back());
-                double endValueNorm = parameter.forwardMap(endValues.front());
-                double change = std::abs((double)(startValueNorm - endValueNorm));
+                auto startValueNorm = parameter.forwardMap(ParameterValue{startValues.back()});
+                auto endValueNorm = parameter.forwardMap(ParameterValue{endValues.front()});
+                double change = std::abs((double)(startValueNorm.get() - endValueNorm.get()));
                 double period = endTime - startTime;
                 if(change >= 0.5 && period > 0.001) {
                     double midTime = (period / 2.0) + startTime;
                     double envValAtTime;
                     api.Envelope_Evaluate(&envelope, midTime, 0, 0, &envValAtTime, nullptr, nullptr, nullptr);
                     double normValAtTime = api.ScaleFromEnvelopeMode(envelopeScalingMode, envValAtTime);
-                    newPointData(midTime, admParameter, parameter.reverseMap(normValAtTime));
+                    newPointData(midTime, admParameter, parameter.reverseMap(ParameterValue{normValAtTime}).get());
                     newDataPoints++;
                 }
             }
@@ -348,7 +348,7 @@ int CumulatedPointData::approximateNonLinearCurves(AdmParameter admParameter, Re
             api.Envelope_Evaluate(admDataSource->envelope, time, 0, 0, &envValAtTime, nullptr, nullptr, nullptr);
             int envelopeScalingMode = api.GetEnvelopeScalingMode(admDataSource->envelope);
             double normValAtTime = api.ScaleFromEnvelopeMode(envelopeScalingMode, envValAtTime);
-            newPointData(time, admParameter, admDataSource->parameter->reverseMap(normValAtTime));
+            newPointData(time, admParameter, admDataSource->parameter->reverseMap(ParameterValue{normValAtTime}).get());
         }
 
         // - Next, use equally spaced, absolute check points - this increases the chance of concurrent nonlinear parameter regions to share the same time stamp and therefore the same block.
@@ -371,7 +371,7 @@ int CumulatedPointData::approximateNonLinearCurves(AdmParameter admParameter, Re
             double deviation = std::abs((double)(realValAtTime - *impliedValAtTime));
 
             if(deviation > CURVE_APPROXIMATION_DEVIATION_THRESHOLD) {
-                newPointData(pointTime, admParameter, admDataSource->parameter->reverseMap(realValAtTime));
+                newPointData(pointTime, admParameter, admDataSource->parameter->reverseMap(ParameterValue{realValAtTime}).get());
                 newPointTimesCount++;
             }
 
@@ -386,7 +386,7 @@ int CumulatedPointData::approximateNonLinearCurves(AdmParameter admParameter, Re
 std::optional<double> CumulatedPointData::getAdmImpliedValueForParameterAtTime(double targetTime, AdmParameter admParameter, Parameter* parameter)
 {
     auto existingValuesAtTime = getValuesForParameterAtTime(targetTime, admParameter);
-    if(existingValuesAtTime.size() > 0) return parameter->forwardMap(existingValuesAtTime.back());
+    if(existingValuesAtTime.size() > 0) return parameter->forwardMap(ParameterValue{existingValuesAtTime.back()}).get();
 
     std::optional<double> pointBefore{};
     for(auto pointTime : getSortedTimesOfValuesForParameter(admParameter)) {
@@ -401,8 +401,8 @@ std::optional<double> CumulatedPointData::getAdmImpliedValueForParameterAtTime(d
             if(pointBefore.has_value()) {
                 double beforeTime = *pointBefore;
                 double afterTime = pointTime;
-                double beforeValue = parameter->forwardMap(getValuesForParameterAtTime(beforeTime, admParameter).back());
-                double afterValue = parameter->forwardMap(getValuesForParameterAtTime(afterTime, admParameter).back());
+                double beforeValue = parameter->forwardMap(ParameterValue{getValuesForParameterAtTime(beforeTime, admParameter).back()}).get();
+                double afterValue = parameter->forwardMap(ParameterValue{getValuesForParameterAtTime(afterTime, admParameter).back()}).get();
                 // Interpolate between the two values.
                 double progression = (targetTime - beforeTime) / (afterTime - beforeTime); // How far progressed targetTime is from beforeTime (0.0) towards afterTime (1.0)
                 return std::optional<double>(beforeValue + ((afterValue - beforeValue) * progression));
@@ -587,7 +587,7 @@ void CumulatedPointData::createValuesForParameterAtAllPointTimes(AdmParameter ad
                 double envValAtTime;
                 api.Envelope_Evaluate(env, time, 0, 0, &envValAtTime, nullptr, nullptr, nullptr);
                 double realValAtTime = api.ScaleFromEnvelopeMode(envelopeScalingMode, envValAtTime);
-                auto convValAtTime = param->reverseMap(realValAtTime);
+                auto convValAtTime = param->reverseMap(ParameterValue{realValAtTime}).get();
                 if(createEvenIfAlreadyDefault || !valueWithinTolerance(convValAtTime, defaultVal)) {
                     newPointData(time, admParameter, convValAtTime);
                 }

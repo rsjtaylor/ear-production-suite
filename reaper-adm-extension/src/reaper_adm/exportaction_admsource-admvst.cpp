@@ -496,7 +496,7 @@ TrackEnvelope * AdmVstExporter::getEnvelopeFor(std::shared_ptr<admplug::PluginSu
     return nullptr;
 }
 
-std::optional<double> AdmVstExporter::getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance * pluginInst, AdmParameter admParameter, ReaperAPI const & api)
+std::optional<ParameterValue> AdmVstExporter::getValueFor(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance * pluginInst, AdmParameter admParameter, ReaperAPI const & api)
 {
     MediaTrack* track = pluginInst->getTrackInstance().get();
 
@@ -510,11 +510,11 @@ std::optional<double> AdmVstExporter::getValueFor(std::shared_ptr<admplug::Plugi
     switch(admParameter) {
         case AdmParameter::OBJECT_GAIN:
             if(api.GetTrackUIVolPan(track, &val, nullptr)) {
-                return std::optional<double>(val);
+                return {ParameterValue(val)};
             }
             break;
     }
-    return std::optional<double>();
+    return {};
 }
 
 bool AdmVstExporter::checkPluginPositions(std::shared_ptr<admplug::PluginSuite> pluginSuite, PluginInstance * pluginInst)
@@ -597,7 +597,7 @@ void AdmVstExporter::createAndAddAudioBlocks(adm::TypeDescriptor typeDescriptor,
             } else if(auto val = getValueFor(pluginSuite, pluginInst, admParameter, api)) {
                 // We do not have an envelope for this ADM parameter but the plugin suite CAN provide a fixed value for it
                 // NOTE that this will include parameters NOT relevant to the current audioObject type, but these are ignored during block creation.
-                auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, *val);
+                auto newErrors = cumulatedPointData.useConstantValueForParameter(admParameter, val->get());
                 admAuthoringErrors.insert(admAuthoringErrors.end(), newErrors.begin(), newErrors.end());
             }
         }
