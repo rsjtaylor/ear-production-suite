@@ -41,18 +41,28 @@ CompositeMapping::CompositeMapping(std::vector<std::shared_ptr<const ParameterVa
 
 ParameterValue admplug::CompositeMapping::forwardMap(ParameterValue val) const
 {
+    bool clipped = val.clipped; // clipped info will get lost in consecutive mappings
+
     for(int i = 0; i < mappings.size(); i++) {
         val = mappings[i]->forwardMap(val);
+        clipped = val.clipped || clipped;
+        val.clipped = clipped;
     }
     return val;
+
 }
 
 ParameterValue admplug::CompositeMapping::reverseMap(ParameterValue val) const
 {
+    bool clipped = val.clipped; // clipped info will get lost in consecutive mappings
+
     for(int i = (mappings.size() - 1); i >= 0; i--) {
         val = mappings[i]->reverseMap(val);
+        clipped = val.clipped || clipped;
+        val.clipped = clipped;
     }
     return val;
+
 }
 
 void CompositeMapping::addMapping(std::shared_ptr<ParameterValueMapping> mapping)
@@ -75,7 +85,7 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::modulus() const {
             return val;
         }
         auto range = maximum - minimum;
-        return ParameterValue{fmod(val.get() - minimum, range) + minimum, val.wasClipped()};
+        return ParameterValue{fmod(val.get() - minimum, range) + minimum, val.clipped};
     },
         [](ParameterValue val) {
         // Can't properly undo without original data
@@ -91,7 +101,7 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::clipper() const {
         [minimum, maximum](ParameterValue val) {
         auto clipped = std::max(val.get(), minimum);
         clipped = std::min(clipped, maximum);
-        return ParameterValue{clipped, true};
+        return ParameterValue{clipped, (val.get() < minimum) || (val.get() > maximum)};
     },
         [](ParameterValue val) {
         // Can't properly undo without original data
@@ -106,11 +116,11 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::normaliser() const 
     return std::make_shared<FunctionalMapping>(
         [minimum, maximum](ParameterValue val) {
         auto range = maximum - minimum;
-        return ParameterValue((val.get() - minimum) / range, val.wasClipped());
+        return ParameterValue((val.get() - minimum) / range, val.clipped);
     },
         [minimum, maximum](ParameterValue val) {
         auto range = maximum - minimum;
-        return ParameterValue((val.get() * range) + minimum, val.wasClipped());
+        return ParameterValue((val.get() * range) + minimum, val.clipped);
     }
     );
 }
@@ -118,12 +128,12 @@ std::shared_ptr<ParameterValueMapping const> ParameterRange::normaliser() const 
 
 ParameterValue admplug::Inversion::forwardMap(ParameterValue val) const
 {
-    return ParameterValue(-val.get(), val.wasClipped());
+    return ParameterValue(-val.get(), val.clipped);
 }
 
 ParameterValue admplug::Inversion::reverseMap(ParameterValue val) const
 {
-    return ParameterValue(-val.get(), val.wasClipped());
+    return ParameterValue(-val.get(), val.clipped);
 }
 
 
@@ -176,10 +186,10 @@ ParameterValue LinearToDb::forwardMap(ParameterValue val) const
     } else {
       db = 20.0 * log10(val.get());
     }
-    return ParameterValue(db, val.wasClipped());
+    return ParameterValue(db, val.clipped);
 }
 
 ParameterValue LinearToDb::reverseMap(ParameterValue val) const
 {
-    return ParameterValue(pow(10, val.get()/20), val.wasClipped());
+    return ParameterValue(pow(10, val.get()/20), val.clipped);
 }

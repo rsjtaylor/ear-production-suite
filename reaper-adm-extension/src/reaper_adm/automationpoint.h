@@ -7,6 +7,7 @@ class ParameterValue {
 public:
   explicit ParameterValue(double value) : value{value}, clipped{false} {}
   ParameterValue(double value, bool clipped) : value{value}, clipped{clipped} {}
+  ParameterValue(const ParameterValue& obj) : value{obj.value}, clipped{obj.clipped} {}
   double get() const { return value; }
   bool operator< (double other) const {
     return get() < other;
@@ -33,12 +34,11 @@ public:
 //    return get() - other;
 //  }
 //  operator double() const { return get(); }
-  bool wasClipped() const { return clipped; }
-  void setClipped() { clipped = true; }
+  
+  bool clipped;
 
 private:
   double value;
-  bool clipped;
 };
 
 
