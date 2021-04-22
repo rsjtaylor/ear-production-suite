@@ -41,12 +41,8 @@ CompositeMapping::CompositeMapping(std::vector<std::shared_ptr<const ParameterVa
 
 ParameterValue admplug::CompositeMapping::forwardMap(ParameterValue val) const
 {
-    bool clipped = val.clipped; // clipped info will get lost in consecutive mappings
-
     for(int i = 0; i < mappings.size(); i++) {
         val = mappings[i]->forwardMap(val);
-        clipped = val.clipped || clipped;
-        val.clipped = clipped;
     }
     return val;
 
@@ -54,12 +50,8 @@ ParameterValue admplug::CompositeMapping::forwardMap(ParameterValue val) const
 
 ParameterValue admplug::CompositeMapping::reverseMap(ParameterValue val) const
 {
-    bool clipped = val.clipped; // clipped info will get lost in consecutive mappings
-
     for(int i = (mappings.size() - 1); i >= 0; i--) {
         val = mappings[i]->reverseMap(val);
-        clipped = val.clipped || clipped;
-        val.clipped = clipped;
     }
     return val;
 
