@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <memory>
 #include <vector>
-
+#include <optional>
 #include "importstatus.h"
 
 namespace admplug {
@@ -18,6 +18,8 @@ public:
     virtual void totalFrames(uint64_t frames) = 0;
     virtual void framesWritten(uint64_t frames) = 0;
     virtual void error(std::exception const& e) = 0;
+    virtual void warning(const std::string& textToShow) = 0;
+    virtual void dismissWarning() = 0;
 };
 
 class ImportBroadcaster : public ImportListener {
@@ -31,6 +33,8 @@ public:
     virtual void totalFrames(uint64_t frames) override;
     virtual void framesWritten(uint64_t frames) override;
     virtual void error(const std::exception &e) override;
+    virtual void warning(const std::string& textToShow) override;
+    virtual void dismissWarning() override;
 private:
     std::vector<std::shared_ptr<ImportListener>> listeners;
 };

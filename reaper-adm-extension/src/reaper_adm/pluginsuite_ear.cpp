@@ -212,6 +212,8 @@ void admplug::EARPluginSuite::onProjectBuildComplete(const ReaperAPI & api)
         auto communicator = CommunicatorRegistry::getCommunicator<EarVstCommunicator>(samplesPort, commandPort);
         communicator->sendAdmAndTrackMappings(originalAdmDocument, trackMappingToAtu);
     }
+    
+    reportClippedParameters();
 }
 
 void EARPluginSuite::onCreateProject(const ProjectNode &, const ReaperAPI &api)
@@ -290,8 +292,8 @@ void EARPluginSuite::onObjectAutomation(const ObjectAutomation& automationElemen
 
     if(plugin) {
       for (auto &parameter : automatedObjectPluginParameters()) {
-        // TODO collect/log stats?
         auto stats = automationElement.apply(*parameter, *plugin);
+        clippedParamInfo.at(parameter->admParameter()).first = std::max(clippedParamInfo.at(parameter->admParameter()).first, stats.clipCount);
       }
 
       for(auto& parameter : trackParameters()) {
@@ -451,4 +453,25 @@ EARPluginSuite::reorderAndFilter(const std::vector<ADMChannel> &channels,
     }
 
     return PluginSuite::reorderAndFilter(modifiedChannels, api);
+}
+
+void admplug::EARPluginSuite::reportClippedParameters()
+{
+    auto haveParamsBeenClipped = [this]() {
+        bool ret = false;
+        for(auto& element : clippedParamInfo) {
+            ret |= element.second.first > 0;
+        }
+        return ret;
+    };
+    
+    if(haveParamsBeenClipped()) {
+        std::string msg{"Parameters have been clipped to the supported range:\n"};
+        for(auto& element : clippedParamInfo) {
+          if(element.second.first > 0) {
+            msg.append(element.second.second+": "+std::to_string(element.second.first)+" data point(s)\n");
+          }
+        }
+        broadcaster->warning(msg);
+    }
 }

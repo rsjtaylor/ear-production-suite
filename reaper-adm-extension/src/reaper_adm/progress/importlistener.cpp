@@ -59,3 +59,16 @@ void ImportBroadcaster::error(const std::exception &e)
     }
 }
 
+void ImportBroadcaster::warning(const std::string& textToShow)
+{
+    for(auto& listener : listeners) {
+       listener->warning(textToShow);
+    }
+}
+
+void ImportBroadcaster::dismissWarning()
+{
+    for(auto& listener : listeners) {
+       listener->dismissWarning();
+    }
+}

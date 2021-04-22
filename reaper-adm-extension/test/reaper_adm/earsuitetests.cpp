@@ -1,4 +1,4 @@
-﻿#include <catch2/catch.hpp>
+#include <catch2/catch.hpp>
 #include <gmock/gmock.h>
 #include "mocks/reaperapi.h"
 #include "mocks/projectelements.h"
@@ -13,7 +13,7 @@
 #include <adm/common_definitions.hpp>
 namespace admplug {
 bool operator==(ParameterValue const &lhs, ParameterValue const &rhs) {
-  return lhs.get() == rhs.get() && lhs.wasClipped() == rhs.wasClipped();
+  return lhs.get() == rhs.get() && lhs.clipped == rhs.clipped;
 }
 }
 
